@@ -390,6 +390,20 @@ h1, h2, h3 {
   text-align: center;
 }
 
+.footer-credit {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.footer-credit a {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footer-credit a:hover { color: rgba(255, 255, 255, 0.75); }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
   .services-grid { grid-template-columns: 1fr; gap: 32px; }
