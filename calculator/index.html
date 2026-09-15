@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automation Time-Savings Calculator — VA on the Go</title>
+<meta name="description" content="See roughly how many hours and dollars automation could save your team each month.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="512x512" href="../assets/favicon-512.png">
+<style>
+  :root {
+    --black: #1A1A1A;
+    --white: #FFFFFF;
+    --blue: #5B8DEF;
+    --pink: #E893C0;
+    --gradient: linear-gradient(120deg, var(--blue), var(--pink));
+    --gray: #6B6B6B;
+    --border: #E7E5E2;
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--black);
+    background: var(--white);
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-heading);
+    margin: 0;
+  }
+
+  a { color: inherit; }
+
+  /* ---------- Site header (matches main site) ---------- */
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .site-header {
+    background: var(--black);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 84px;
+  }
+
+  .logo-link { display: flex; align-items: center; }
+
+  .logo { height: 44px; width: auto; display: block; }
+
+  .site-nav { display: flex; gap: 40px; }
+
+  .site-nav a {
+    color: var(--white);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    position: relative;
+    padding: 4px 0;
+  }
+
+  .site-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 1px;
+    background: var(--white);
+    transition: width 0.2s ease;
+  }
+
+  .site-nav a:hover::after { width: 100%; }
+
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .nav-toggle span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--white);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2) { opacity: 0; }
+  .nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  @media (max-width: 720px) {
+    .site-nav {
+      position: absolute;
+      top: 84px;
+      left: 0;
+      right: 0;
+      background: var(--black);
+      flex-direction: column;
+      gap: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+
+    .site-nav.open { max-height: 240px; }
+
+    .site-nav a {
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .site-nav a::after { display: none; }
+
+    .nav-toggle { display: flex; }
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-block;
+    padding: 14px 32px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    font-family: var(--font-body);
+  }
+
+  .btn:hover { transform: translateY(-2px); }
+
+  .btn-primary {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+
+  /* ---------- Calculator layout ---------- */
+  .calc-main {
+    padding: 64px 0 100px;
+  }
+
+  .calc-intro {
+    max-width: 640px;
+    margin-bottom: 48px;
+  }
+
+  .calc-intro h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .calc-intro p {
+    color: var(--gray);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .calc-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 32px;
+  }
+
+  .calc-card-title {
+    font-size: 1.1rem;
+    margin-bottom: 28px;
+  }
+
+  /* Inputs */
+  .input-group {
+    margin-bottom: 32px;
+  }
+
+  .input-group:last-child { margin-bottom: 0; }
+
+  .input-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .input-label-row label {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--black);
+  }
+
+  .input-value {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--blue);
+    white-space: nowrap;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: #eef1f8;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--gradient);
+    border: 3px solid var(--white);
+    box-shadow: 0 2px 8px rgba(91, 141, 239, 0.4);
+    cursor: pointer;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--gradient);
+    border: 3px solid var(--white);
+    box-shadow: 0 2px 8px rgba(91, 141, 239, 0.4);
+    cursor: pointer;
+  }
+
+  .input-hint {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-top: 10px;
+  }
+
+  .stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
+  }
+
+  .stepper-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: #f7f8fc;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--black);
+    transition: background 0.15s ease;
+  }
+
+  .stepper-btn:hover { background: #eef1f8; }
+
+  .stepper input[type="number"] {
+    width: 56px;
+    height: 44px;
+    border: none;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--black);
+    -moz-appearance: textfield;
+  }
+
+  .stepper input[type="number"]::-webkit-outer-spin-button,
+  .stepper input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .segmented {
+    display: flex;
+    gap: 8px;
+  }
+
+  .segment {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--gray);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .segment.active {
+    background: var(--gradient);
+    color: var(--white);
+    border-color: transparent;
+  }
+
+  .segment:hover:not(.active) {
+    border-color: var(--blue);
+    color: var(--black);
+  }
+
+  /* Results */
+  .calc-results {
+    background: #FAFAFC;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-row:first-of-type { padding-top: 0; }
+
+  .result-row-annual {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .result-label {
+    font-size: 0.92rem;
+    color: var(--gray);
+  }
+
+  .result-number {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: var(--black);
+    transition: color 0.3s ease;
+  }
+
+  .result-number.pulse { color: var(--blue); }
+
+  .result-context {
+    margin-top: 24px;
+    font-size: 0.85rem;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  /* Closing */
+  .calc-closing {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .calc-closing p {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 780px) {
+    .calc-grid { grid-template-columns: 1fr; }
+    .calc-card { padding: 28px 24px; }
+    .calc-main { padding: 48px 0 72px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="../index.html" class="logo-link" aria-label="VA on the Go — home">
+      <img src="../assets/logo-white.png" alt="VA on the Go" class="logo">
+    </a>
+
+    <nav class="site-nav" id="site-nav">
+      <a href="../index.html#services">Services</a>
+      <a href="../index.html#about">About</a>
+      <a href="../index.html#contact">Contact</a>
+    </nav>
+
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<main class="calc-main">
+  <div class="container">
+
+    <div class="calc-intro">
+      <h1>Automation Time-Savings Calculator</h1>
+      <p>Adjust the inputs below to see how much time and money automation could save your team — updates instantly, no submitting required.</p>
+    </div>
+
+    <div class="calc-grid">
+
+      <div class="calc-card calc-inputs">
+        <h2 class="calc-card-title">Your numbers</h2>
+
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="hoursInput">Hours per week on manual/repetitive tasks</label>
+            <span class="input-value" id="hoursValue">10 hrs</span>
+          </div>
+          <input type="range" id="hoursInput" min="1" max="40" step="1" value="10">
+        </div>
+
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="peopleInput">Number of people doing this work</label>
+            <span class="input-value" id="peopleValue">3</span>
+          </div>
+          <div class="stepper">
+            <button type="button" class="stepper-btn" id="peopleMinus" aria-label="Decrease number of people">&minus;</button>
+            <input type="number" id="peopleInput" min="1" max="20" step="1" value="3" inputmode="numeric">
+            <button type="button" class="stepper-btn" id="peoplePlus" aria-label="Increase number of people">+</button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label-row">
+            <label for="costInput">Average hourly cost of that time</label>
+            <span class="input-value" id="costValue">$30/hr</span>
+          </div>
+          <input type="range" id="costInput" min="15" max="100" step="1" value="30">
+          <p class="input-hint">Your estimate — doesn't need to be exact.</p>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label-row">
+            <label id="automationLabel">How automatable does this feel?</label>
+          </div>
+          <div class="segmented" id="automationSegmented" role="radiogroup" aria-labelledby="automationLabel">
+            <button type="button" class="segment" data-value="0.2" role="radio" aria-checked="false">Low</button>
+            <button type="button" class="segment active" data-value="0.4" role="radio" aria-checked="true">Medium</button>
+            <button type="button" class="segment" data-value="0.6" role="radio" aria-checked="false">High</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-card calc-results">
+        <h2 class="calc-card-title">Estimated impact</h2>
+
+        <div class="result-row">
+          <span class="result-label">Hours saved per week</span>
+          <span class="result-number" id="hoursSaved" data-raw="0">0 hrs</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Estimated monthly savings</span>
+          <span class="result-number" id="monthlySavings" data-raw="0">$0</span>
+        </div>
+        <div class="result-row result-row-annual">
+          <span class="result-label">Estimated annual savings</span>
+          <span class="result-number" id="annualSavings" data-raw="0">$0</span>
+        </div>
+
+        <p class="result-context">These are rough estimates — every business is different, but this gives you a sense of the impact.</p>
+      </div>
+
+    </div>
+
+    <div class="calc-closing">
+      <p>Curious what this could look like for your business specifically?</p>
+      <a href="../index.html#contact" class="btn btn-primary">Contact me</a>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  // Mobile nav toggle
+  const navToggle = document.getElementById('nav-toggle');
+  const siteNav = document.getElementById('site-nav');
+
+  navToggle.addEventListener('click', () => {
+    const isOpen = siteNav.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+
+  siteNav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      siteNav.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Calculator
+  const hoursInput = document.getElementById('hoursInput');
+  const hoursValue = document.getElementById('hoursValue');
+  const peopleInput = document.getElementById('peopleInput');
+  const peopleValue = document.getElementById('peopleValue');
+  const peopleMinus = document.getElementById('peopleMinus');
+  const peoplePlus = document.getElementById('peoplePlus');
+  const costInput = document.getElementById('costInput');
+  const costValue = document.getElementById('costValue');
+  const segments = Array.from(document.querySelectorAll('.segment'));
+
+  const hoursSavedEl = document.getElementById('hoursSaved');
+  const monthlySavingsEl = document.getElementById('monthlySavings');
+  const annualSavingsEl = document.getElementById('annualSavings');
+
+  const animationFrames = new WeakMap();
+
+  function formatHours(value) {
+    return `${value.toFixed(1)} hrs`;
+  }
+
+  function formatCurrency(value) {
+    return `$${Math.round(value).toLocaleString('en-US')}`;
+  }
+
+  function animateNumber(el, targetValue, formatFn) {
+    const startValue = parseFloat(el.dataset.raw || '0');
+    if (Math.abs(targetValue - startValue) < 0.001) {
+      el.textContent = formatFn(targetValue);
+      el.dataset.raw = String(targetValue);
+      return;
+    }
+
+    const existingFrame = animationFrames.get(el);
+    if (existingFrame) cancelAnimationFrame(existingFrame);
+
+    const duration = 400;
+    let startTime = null;
+    el.classList.add('pulse');
+
+    function step(timestamp) {
+      if (startTime === null) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = startValue + (targetValue - startValue) * eased;
+      el.textContent = formatFn(current);
+
+      if (progress < 1) {
+        animationFrames.set(el, requestAnimationFrame(step));
+      } else {
+        el.dataset.raw = String(targetValue);
+        el.classList.remove('pulse');
+        animationFrames.delete(el);
+      }
+    }
+
+    animationFrames.set(el, requestAnimationFrame(step));
+  }
+
+  function clampPeople(value) {
+    return Math.min(20, Math.max(1, value));
+  }
+
+  function getAutomationRate() {
+    const active = segments.find((s) => s.classList.contains('active'));
+    return active ? Number(active.dataset.value) : 0.4;
+  }
+
+  function updateReadouts() {
+    hoursValue.textContent = `${hoursInput.value} hrs`;
+    peopleValue.textContent = peopleInput.value;
+    costValue.textContent = `$${costInput.value}/hr`;
+  }
+
+  function calculate() {
+    const hours = Number(hoursInput.value);
+    const people = Number(peopleInput.value);
+    const cost = Number(costInput.value);
+    const automationRate = getAutomationRate();
+
+    const hoursSaved = hours * people * automationRate;
+    const monthlySavings = hoursSaved * 4.3 * cost;
+    const annualSavings = monthlySavings * 12;
+
+    animateNumber(hoursSavedEl, hoursSaved, formatHours);
+    animateNumber(monthlySavingsEl, monthlySavings, formatCurrency);
+    animateNumber(annualSavingsEl, annualSavings, formatCurrency);
+  }
+
+  hoursInput.addEventListener('input', () => { updateReadouts(); calculate(); });
+  costInput.addEventListener('input', () => { updateReadouts(); calculate(); });
+
+  peopleInput.addEventListener('input', () => {
+    peopleInput.value = clampPeople(Number(peopleInput.value) || 1);
+    updateReadouts();
+    calculate();
+  });
+
+  peopleMinus.addEventListener('click', () => {
+    peopleInput.value = clampPeople(Number(peopleInput.value) - 1);
+    updateReadouts();
+    calculate();
+  });
+
+  peoplePlus.addEventListener('click', () => {
+    peopleInput.value = clampPeople(Number(peopleInput.value) + 1);
+    updateReadouts();
+    calculate();
+  });
+
+  segments.forEach((segment) => {
+    segment.addEventListener('click', () => {
+      segments.forEach((s) => {
+        s.classList.remove('active');
+        s.setAttribute('aria-checked', 'false');
+      });
+      segment.classList.add('active');
+      segment.setAttribute('aria-checked', 'true');
+      calculate();
+    });
+  });
+
+  updateReadouts();
+  calculate();
+</script>
+
+</body>
+</html>
