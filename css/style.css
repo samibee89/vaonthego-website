@@ -337,7 +337,7 @@ h1, h2, h3 {
 }
 
 .built-card .btn-primary {
-  background: var(--pink);
+  background: var(--gradient);
   color: var(--white);
 }
 
