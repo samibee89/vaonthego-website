@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Kind of Digital Nomad Are You?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="512x512" href="../assets/favicon-512.png">
+<style>
+  :root {
+    --black: #1A1A1A;
+    --white: #FFFFFF;
+    --blue: #5B8DEF;
+    --pink: #E893C0;
+    --gradient: linear-gradient(135deg, var(--blue), var(--pink));
+    --card-radius: 24px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: var(--black);
+  }
+
+  h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+    margin: 0;
+  }
+
+  /* ---------- Site header (matches main site) ---------- */
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .site-header {
+    background: var(--black);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 84px;
+  }
+
+  .logo-link { display: flex; align-items: center; }
+
+  .logo { height: 44px; width: auto; }
+
+  .site-nav { display: flex; gap: 40px; }
+
+  .site-nav a {
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    position: relative;
+    padding: 4px 0;
+  }
+
+  .site-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 1px;
+    background: var(--white);
+    transition: width 0.2s ease;
+  }
+
+  .site-nav a:hover::after { width: 100%; }
+
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .nav-toggle span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--white);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2) { opacity: 0; }
+  .nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  @media (max-width: 720px) {
+    .site-nav {
+      position: absolute;
+      top: 84px;
+      left: 0;
+      right: 0;
+      background: var(--black);
+      flex-direction: column;
+      gap: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+
+    .site-nav.open { max-height: 240px; }
+
+    .site-nav a {
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .site-nav a::after { display: none; }
+
+    .nav-toggle { display: flex; }
+  }
+
+  /* ---------- Quiz layout ---------- */
+  .quiz-main {
+    min-height: calc(100vh - 84px);
+    background: linear-gradient(160deg, #eaf1ff 0%, #fdeef7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--card-radius);
+    padding: 40px 36px;
+    box-shadow: 0 20px 60px rgba(91, 141, 239, 0.15);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 200px;
+    height: 200px;
+    background: var(--gradient);
+    opacity: 0.15;
+    border-radius: 50%;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Intro screen */
+  .intro-emoji {
+    font-size: 48px;
+    margin-bottom: 8px;
+  }
+
+  .intro h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .intro p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #4a4a4a;
+    margin-bottom: 28px;
+  }
+
+  .intro-meta {
+    font-size: 0.85rem;
+    color: #8a8a8a;
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  /* Buttons */
+  .btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 28px;
+    cursor: pointer;
+    color: var(--white);
+    background: var(--gradient);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 8px 20px rgba(91, 141, 239, 0.3);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(91, 141, 239, 0.4);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn-block {
+    width: 100%;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    margin-bottom: 24px;
+  }
+
+  .progress-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 8px;
+    background: #eef1f8;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--gradient);
+    border-radius: 999px;
+    transition: width 0.35s ease;
+  }
+
+  /* Question */
+  .question h2 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    margin-bottom: 24px;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .option-btn {
+    font-family: 'Inter', sans-serif;
+    text-align: left;
+    background: #f7f8fc;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 16px 18px;
+    font-size: 0.98rem;
+    font-weight: 500;
+    color: var(--black);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+  }
+
+  .option-btn:hover {
+    border-color: var(--blue);
+    background: #f0f4ff;
+    transform: translateX(2px);
+  }
+
+  .option-btn:active {
+    transform: scale(0.99);
+  }
+
+  /* Result */
+  .result-emoji {
+    font-size: 56px;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .result-tag {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 6px;
+  }
+
+  .result h2 {
+    font-size: 1.9rem;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .result p {
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: #3d3d3d;
+    margin-bottom: 28px;
+  }
+
+  .result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .promo {
+    border-top: 1px solid #eef1f8;
+    padding-top: 24px;
+    margin-bottom: 20px;
+  }
+
+  .promo-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #6a6a6a;
+    margin-bottom: 16px;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--blue);
+    box-shadow: none;
+    border: 2px solid #e2e8f7;
+  }
+
+  .btn-secondary:hover {
+    background: #f0f4ff;
+    box-shadow: none;
+  }
+
+  [hidden] { display: none !important; }
+
+  @media (max-width: 420px) {
+    .card { padding: 32px 22px; }
+    .intro h1 { font-size: 1.6rem; }
+    .result h2 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="../index.html" class="logo-link" aria-label="VA on the Go — home">
+      <img src="../assets/logo-white.png" alt="VA on the Go" class="logo">
+    </a>
+
+    <nav class="site-nav" id="site-nav">
+      <a href="../index.html#services">Services</a>
+      <a href="../index.html#about">About</a>
+      <a href="../index.html#contact">Contact</a>
+    </nav>
+
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<main class="quiz-main">
+<div class="app">
+  <div class="card">
+
+    <!-- Intro Screen -->
+    <section id="intro" class="intro">
+      <div class="intro-emoji">🌍</div>
+      <h1>What Kind of Digital Nomad Are You?</h1>
+      <p>Six quick questions. Zero right answers. Find out which nomad archetype matches how you actually like to live and work.</p>
+      <button class="btn btn-block" id="startBtn">Start the Quiz</button>
+      <p class="intro-meta">Takes about a minute</p>
+    </section>
+
+    <!-- Question Screen -->
+    <section id="quiz" class="question" hidden>
+      <div class="progress-wrap">
+        <div class="progress-label" id="progressLabel">Question 1 of 6</div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <h2 id="questionText"></h2>
+      <div class="options" id="optionsWrap"></div>
+    </section>
+
+    <!-- Result Screen -->
+    <section id="result" class="result" hidden>
+      <span class="result-emoji" id="resultEmoji"></span>
+      <div class="result-tag">Your nomad type is</div>
+      <h2 id="resultTitle"></h2>
+      <p id="resultDesc"></p>
+      <div class="promo">
+        <p class="promo-text">Enjoyed this quiz? I build things like this — small interactive tools — for businesses too. If you'd like one made for yours, get in touch.</p>
+        <a class="btn btn-block" id="contactBtn" href="../index.html#contact">Contact me</a>
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-secondary" id="retakeBtn">Retake Quiz</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+</main>
+
+<script>
+  const navToggle = document.getElementById('nav-toggle');
+  const siteNav = document.getElementById('site-nav');
+
+  navToggle.addEventListener('click', () => {
+    const isOpen = siteNav.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+
+  siteNav.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      siteNav.classList.remove('open');
+      navToggle.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  const questions = [
+    {
+      text: "Your ideal \"office\" for the day is...",
+      options: [
+        { label: "A hammock near the water", type: "beach" },
+        { label: "A buzzing coworking space with good coffee", type: "coworking" },
+        { label: "Somewhere remote most people have never heard of", type: "offgrid" },
+        { label: "My same home desk, thanks", type: "homebase" }
+      ]
+    },
+    {
+      text: "Your wifi just cut out mid-call. You...",
+      options: [
+        { label: "Shrug, it happens. Back to the beach", type: "beach" },
+        { label: "Panic slightly, wifi reliability matters to you", type: "coworking" },
+        { label: "Expected it, that's part of the adventure", type: "offgrid" },
+        { label: "Rare occurrence, your setup is solid", type: "homebase" }
+      ]
+    },
+    {
+      text: "Your packing style is...",
+      options: [
+        { label: "Barely anything, flip-flops and a laptop", type: "beach" },
+        { label: "Efficient carry-on, you've got a system", type: "coworking" },
+        { label: "Prepared for anything, gear-heavy", type: "offgrid" },
+        { label: "You mostly don't pack, you're usually home", type: "homebase" }
+      ]
+    },
+    {
+      text: "A \"successful week\" for you looks like...",
+      options: [
+        { label: "Good sunsets, a few good emails sent", type: "beach" },
+        { label: "Deep work done, met some interesting people", type: "coworking" },
+        { label: "Saw something incredible nobody else has", type: "offgrid" },
+        { label: "Calm, routine, got through the to-do list", type: "homebase" }
+      ]
+    },
+    {
+      text: "Your ideal travel pace is...",
+      options: [
+        { label: "Slow, why rush a good thing", type: "beach" },
+        { label: "A few weeks per place, enough to settle in", type: "coworking" },
+        { label: "Wherever the wind takes me", type: "offgrid" },
+        { label: "I don't move much, I like my base", type: "homebase" }
+      ]
+    },
+    {
+      text: "Pick a drink:",
+      options: [
+        { label: "Fresh coconut, obviously", type: "beach" },
+        { label: "Oat milk flat white", type: "coworking" },
+        { label: "Whatever's local and unfamiliar", type: "offgrid" },
+        { label: "My go-to order, I know what I like", type: "homebase" }
+      ]
+    }
+  ];
+
+  const results = {
+    beach: {
+      emoji: "🏖️",
+      title: "The Beach Bum",
+      desc: "Laptop in the sand, minimal schedule, works around the tide not the clock. You've figured out that the best productivity hack is a good view and zero rush. Wifi is optional, sunscreen is not."
+    },
+    coworking: {
+      emoji: "☕",
+      title: "The Coworking Regular",
+      desc: "You love structure, community, and a good coffee shop or coworking space. Same desk, different country. Reliable wifi and a decent flat white will always win out over a prettier view."
+    },
+    offgrid: {
+      emoji: "🧭",
+      title: "The Off-Grid Explorer",
+      desc: "You chase remote, unusual places most people have never heard of. Unpredictable wifi is a badge of honor, not a problem. You'd rather have a wild story than a smooth schedule."
+    },
+    homebase: {
+      emoji: "🏡",
+      title: "The Home Base Hybrid",
+      desc: "You travel in bursts but always return to one home base. Nomad life on your own terms, with a familiar bed and a go-to coffee order waiting for you when you're done exploring."
+    }
+  };
+
+  const scores = { beach: 0, coworking: 0, offgrid: 0, homebase: 0 };
+  let currentQuestion = 0;
+
+  const introEl = document.getElementById('intro');
+  const quizEl = document.getElementById('quiz');
+  const resultEl = document.getElementById('result');
+  const progressLabel = document.getElementById('progressLabel');
+  const progressFill = document.getElementById('progressFill');
+  const questionText = document.getElementById('questionText');
+  const optionsWrap = document.getElementById('optionsWrap');
+  const resultEmoji = document.getElementById('resultEmoji');
+  const resultTitle = document.getElementById('resultTitle');
+  const resultDesc = document.getElementById('resultDesc');
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    introEl.hidden = true;
+    quizEl.hidden = false;
+    renderQuestion();
+  });
+
+  document.getElementById('retakeBtn').addEventListener('click', resetQuiz);
+
+  function renderQuestion() {
+    const q = questions[currentQuestion];
+    progressLabel.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+    progressFill.style.width = `${((currentQuestion) / questions.length) * 100}%`;
+    questionText.textContent = q.text;
+    optionsWrap.innerHTML = '';
+
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt.label;
+      btn.addEventListener('click', () => selectAnswer(opt.type));
+      optionsWrap.appendChild(btn);
+    });
+  }
+
+  function selectAnswer(type) {
+    scores[type]++;
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+      renderQuestion();
+    } else {
+      progressFill.style.width = '100%';
+      showResult();
+    }
+  }
+
+  function showResult() {
+    const winner = Object.keys(scores).reduce((a, b) => scores[b] > scores[a] ? b : a);
+    const r = results[winner];
+
+    quizEl.hidden = true;
+    resultEmoji.textContent = r.emoji;
+    resultTitle.textContent = r.title;
+    resultDesc.textContent = r.desc;
+    resultEl.hidden = false;
+  }
+
+  function resetQuiz() {
+    Object.keys(scores).forEach(k => scores[k] = 0);
+    currentQuestion = 0;
+    resultEl.hidden = true;
+    introEl.hidden = false;
+  }
+</script>
+
+</body>
+</html>
